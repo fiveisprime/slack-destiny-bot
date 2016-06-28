@@ -12,16 +12,16 @@ There are a few commands that return information about players, at this point it
 COMMANDS
 ---
 
-* `<bot-name> armory <gamertag>` - Returns that players Grimoire Score.
-* `<bot-name> played <gamertag>` - Returns that players Last played character and lightlevel
-* `<bot-name> inventory <gamertag>` - Returns that players Last played character's equipped inventory
+* `<bot-name> grimoire <psn id>` - Returns that players Grimoire Score.
+* `<bot-name> played <psn id>` - Returns that players Last played character and lightlevel
+* `<bot-name> inventory <psn id>` - Returns that players Last played character's equipped inventory
 * `<bot-name> vendor xur` - Returns Xur's Inventory or a warning when he isn't available
-* `<bot-name> q <query>` - Enter a <query> to search the Bungie armory, such as "Telesto", and recieve information on that item
+* `<bot-name> lookup <query>` - Enter a <query> to search the Bungie armory, such as "Telesto", and recieve information on that item
 
 ## Installation
 You will need to have [hubot](https://hubot.github.com/) setup with the [slack-adapter](https://github.com/slackhq/hubot-slack)
 
-Run the following command 
+Run the following command
 
     $ npm install slack-destiny-bot
 

@@ -18,7 +18,7 @@ module.exports = (robot) ->
   dataHelper.fetchDefs()
 
   # Returns a grimoire score for a gamertag
-  robot.respond /armory (.*)/i, (res) =>
+  robot.respond /grimoire (.*)/i, (res) =>
     playerName = res.match[1]
 
     getPlayerId(res, playerName).then (playerId) ->
@@ -26,7 +26,7 @@ module.exports = (robot) ->
         res.send playerName+'\'s Grimoire Score is: '+grimoireScore
 
   # Returns a grimoire score for a gamertag
-  robot.respond /q (.*)/i, (res) =>
+  robot.respond /lookup (.*)/i, (res) =>
     query = res.match[1]
 
     searchArmory(res, query).then (response) ->
@@ -64,13 +64,11 @@ module.exports = (robot) ->
   # Returns a list of items for xur
   robot.respond /vendor xur/i, (res) ->
     getXurInventory(res).then (response) ->
-      responseData = response.data
-
-      if not responseData
-        res.send 'Xur isn\'t available yet and i gotta wait til he gets here to build it out'
+      if not response
+        res.send 'Xur is currently unavailable.'
       else
         itemsDefs = response.definitions.items
-        itemsCategories = responseData.saleItemCategories
+        itemsCategories = response.data.saleItemCategories
         exoticCategory = itemsCategories.filter (cat) -> cat.categoryTitle == 'Exotic Gear'
         exoticData = exoticCategory[0].saleItems
         itemsData = exoticData.map (exotic) -> dataHelper.serializeFromApi(exotic.item, itemsDefs)
@@ -84,7 +82,7 @@ module.exports = (robot) ->
 # Gets general player information from a players gamertag
 getPlayerId = (bot, name) ->
   deferred = new Deferred()
-  endpoint = 'SearchDestinyPlayer/1/'+name
+  endpoint = 'SearchDestinyPlayer/2/'+name
 
   makeRequest bot, endpoint, (response) ->
     foundData = response[0]
@@ -102,7 +100,7 @@ getPlayerId = (bot, name) ->
 # Gets characterId for last character played
 getCharacterId = (bot, playerId) ->
   deferred = new Deferred()
-  endpoint = '1/Account/'+playerId
+  endpoint = '2/Account/'+playerId
 
   makeRequest bot, endpoint, (response) ->
     data = response.data
@@ -117,7 +115,7 @@ getCharacterId = (bot, playerId) ->
 # Gets Inventory of last played character
 getCharacterInventory = (bot, playerId, characterId) ->
   deferred = new Deferred()
-  endpoint = '1/Account/'+playerId+'/Character/'+characterId+'/Inventory'
+  endpoint = '2/Account/'+playerId+'/Character/'+characterId+'/Inventory'
   params =
     definitions: true
 
@@ -141,7 +139,7 @@ getCharacterInventory = (bot, playerId, characterId) ->
 # Gets genral information about last played character
 getLastCharacter = (bot, playerId) ->
   deferred = new Deferred()
-  endpoint = '/1/Account/'+playerId
+  endpoint = '/2/Account/'+playerId
   genderTypes = ['Male', 'Female', 'Unknown']
   raceTypes = ['Human', 'Awoken', 'Exo', 'Unknown']
   classTypes = ['Titan', 'Hunter', 'Warlock', 'Unknown']
@@ -178,7 +176,7 @@ getXurInventory = (bot) ->
 # Gets a players Grimoire Score from their membershipId
 getGrimoireScore = (bot, memberId) ->
   deferred = new Deferred()
-  endpoint = '/Vanguard/Grimoire/1/'+memberId
+  endpoint = '/Vanguard/Grimoire/2/'+memberId
 
   makeRequest bot, endpoint, (response) ->
     score = response.data.score
@@ -220,7 +218,7 @@ makeRequest = (bot, endpoint, callback, params) ->
   console.log(url)
 
   bot.http(url)
-    .header('X-API-Key', BUNGIE_API_KEY)
+    .header('X-API-KEY', BUNGIE_API_KEY)
     .get() (err, response, body) ->
       object = JSON.parse(body)
       callback(object.Response)
